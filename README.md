@@ -1,6 +1,6 @@
-# did:cosmos Method Specification
+# did:ixo Method Specification
 
-This document defines the syntax, data model, and operations for the **did:cosmos** DID method.
+This document defines the syntax, data model, and operations for the **did:ixo** DID method.
 
 **Authors** :
 
@@ -8,11 +8,9 @@ This document defines the syntax, data model, and operations for the **did:cosmo
 * **Lohan Spies** &lt;<a href="mailto:lohan.spies@ixo.world">lohan.spies@ixo.world</a>&gt;
 * **Shaun Conway** &lt;<a href="mailto:shaun.conway@ixo.world">shaun.conway@ixo.world</a>&gt;
 
-This specification is under active development at [https://github.com/interchainio/did-cosmos](https://github.com/interchainio/did-cosmos).
-
 ## Abstract
 
-**did:cosmos** is an IID method designed to refer to Cosmos-compatible on-chain assets.
+**did:ixo** is an IID method designed to refer to Interchain-compatible on-chain assets.
 
 Interchain Identifiers (IIDs) [[1]](#ref1) are a family of Decentralized Identifier methods which are purpose-designed to identify, refer to, and interact with digital assets within blockchain namespaces.
 
@@ -20,19 +18,19 @@ The IID specification builds on the Decentralized Identifier (DID) Core specific
 
 Restricted to on-chain assets, IIDs are a new class of identifier uniquely suited to the requirements of fungible tokens, non-fungible tokens, and other chain-native components. IID methods can be developed for any compatible blockchain, making them suitable for interoperable representations of assets (and the cryptography that secures those tokens) regardless of the underlying chain.
 
-This particular specification, **did:cosmos** applies the IID approach to assets on blockchains made with the Cosmos SDK.
+This particular specification, **did:ixo** applies the IID approach to assets on modular blockchains that are built with the IXO Blockchain SDK, which has its base in the Cosmos SDK.
 
-IIDs also introduce a few new features—conformant extensions to the DID Core specification—that provide for privacy-respecting options for the full range of expected token functionality, including Linked Resources, On-chain Service Endpoints, and Accorded Rights. We describe those here, capturing their definition at the time this specification was developed. See the IID specification for current normative definitions.
+IIDs also introduce a few new features—conformant extensions to the DID Core specification—that provide for privacy-respecting options for the full range of expected token functionality, including Linked Resources, On-chain Service Endpoints, Linked Claims, Linked Entities, and Accorded Rights that may be executable.
 
-DID Methods which conform to the IID specification resolve to a DID document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
+DID Methods which conform to the IID specification resolve to a DID document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. IIDs are DIDs, which means all software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
 
-**did:cosmos** DIDs are IIDs intended identify assets on Cosmos application chains.
+**did:ixo** DIDs are IIDs intended to specifically identify assets on blockchains that are built using the IXO Blockchain SDK.
 
 ## Architecture Overview
 
-In the Cosmos ecosystem, **application chains** are sovereign blockchains built using the Cosmos SDK. These application chains are comprised of various modules, which perform different functions. We refer to modules that manage the state of on-chain assets as **asset modules**.
+In the Interchain ecosystem, **application chains** are sovereign blockchains built using the Interchain/Cosmos SDK. These application chains are comprised of various modules, which each provide a defined set of services. We refer to modules that manage the state of on-chain assets as **asset modules**.
 
-To support **did:cosmos**, three modules must be operational: a **chain registry**, a **namespace registry**, and an **asset module**.
+To support **did:ixo**, three modules must be operational: a **chain registry**, a **namespace registry**, and an **asset module**.
 
 ```mermaid
 classDiagram
@@ -62,25 +60,25 @@ classDiagram
 
 The role of each of these modules is further described below.
 
-## did:cosmos Syntax
+## did:ixo Syntax
 
-An example `did:cosmos` method identifier is `did:cosmos:version:chainspace:namespace:unique-id`.
+An example `did:ixo` method identifier is `did:ixo:version:chainspace:namespace:unique-id`.
 
-There are four forms of did:cosmos DIDs:
+There are four forms of did:ixo DIDs:
 
 ```abnf
-did:cosmos:version:chainspace:namespace:unique-id
-did:cosmos:chainspace:namespace:unique-id
-did:cosmos:version:chainspace
-did:cosmos:chainspace
+did:ixo:version:chainspace:namespace:unique-id
+did:ixo:chainspace:namespace:unique-id
+did:ixo:version:chainspace
+did:ixo:chainspace
 ```
 
 In short, you must have a chainspace, but the version and asset-id are optional.
 
-### did:cosmos ABNF
+### did:ixo ABNF
 
 ```abnf
-did-cosmos          = "did:cosmos:" method-specific-id
+did-Interchain          = "did:ixo:" method-specific-id
 method-specific-id = [version ":"] chainspace [":" asset-id]
 version            = 1*DIGIT
 chainspace         = ALPHA *id-char
@@ -93,37 +91,37 @@ pct-encoded        = "%" HEXDIG HEXDIG
 
 ### Method Name
 
-A DID that uses this method MUST begin with the prefix `did:cosmos`. The prefix string MUST be in lowercase.
+A DID that uses this method MUST begin with the prefix `did:ixo`. The prefix string MUST be in lowercase.
 
 ### Method Specific Identifier
 
-The `did:cosmos` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `asset-id` component.
+The `did:ixo` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `asset-id` component.
 
-The `version`, if present, MUST be an integer that identifies a specific version of `did:cosmos` method operations such as
+The `version`, if present, MUST be an integer that identifies a specific version of `did:ixo` method operations such as
 create, read, update, and deactivate. The version number increases by one for each breaking change in the specification, enabling future enhancements to the specification while retaining backwards compatibility for long-lived identifiers.
 
 If `version` is not present, it MUST be assumed to be version 1, the set of operations defined in this initial version of the specification. Later versions will refer to operations defined in a future version of this specification. Note that the version refers to the set of operations, not the version of the specification.
 
-Implementers SHOULD maintain compatibility with all existing versions likely to be in use. For application chains that identify assets using did:cosmos, this means supporting the version that was current when the chain first adopted did:cosmos functionality, as well as all subsequent versions if possible. DID resolvers--which may be off-chain--will likely need to maintain support for all versions until convinced there are no outstanding DIDs using that version. Software which is asked to handled a version # that it does not support MUST return an error.
+Implementers SHOULD maintain compatibility with all existing versions likely to be in use. For application chains that identify assets using did:ixo, this means supporting the version that was current when the chain first adopted did:ixo functionality, as well as all subsequent versions if possible. DID resolvers--which may be off-chain--will likely need to maintain support for all versions until convinced there are no outstanding DIDs using that version. Software which is asked to handled a version # that it does not support MUST return an error.
 
-The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored. It must begin with an alphabetic character so parsers can distinguish between the `version` component and the `chainspace` component. Thereafter, it may contain any alpha numeric character.
+The `chainspace` is defined as a string that identifies a specific Interchain blockchain (e.g. "ixo", "regen", "Interchain") where the DID reference is stored. It must begin with an alphabetic character so parsers can distinguish between the `version` component and the `chainspace` component. Thereafter, it may contain any alpha numeric character.
 
 The `asset-id`, if present, MUST be a unique identifier for the particular on-chain asset hosted on the blockchain defined by `chainspace`. It is comprised of a `namespace` and a `unique-id`.
 
 The `namespace` is an alphanumeric string that identifies a distinct namespace managed by the application chain's name server module. These namespaces, e.g., "nft", "bank", "staking", identify where the on-chain asset is maintained on that particular chain. It is used to route incoming resolution requests to the correct asset module.
 
-The `unique-id` is mixed character string that uniquely identifies an asset managed by the application chain under the namespace defined by the `namespace` component. The asset module that handles each namespace MUST enforce uniqueness so that one and only one asset under that module's control is associated with each `unique-id`. To facilitate off-chain creation of did:cosmos DIDs, prior to creating an on-chain asset, the `unique-id` MUST be a representation of a Secp256k1 public key as encoded for did:key <https://w3c-ccg.github.io/did-method-key/#secp256k1> based on the multibase and multicodec methods: ```multibase(multicodec(public_key))
+The `unique-id` is mixed character string that uniquely identifies an asset managed by the application chain under the namespace defined by the `namespace` component. The asset module that handles each namespace MUST enforce uniqueness so that one and only one asset under that module's control is associated with each `unique-id`. To facilitate off-chain creation of did:ixo DIDs, prior to creating an on-chain asset, the `unique-id` MUST be a representation of a Secp256k1 public key as encoded for did:key <https://w3c-ccg.github.io/did-method-key/#secp256k1> based on the multibase and multicodec methods: ```multibase(multicodec(public_key))
 
 If `asset-id` is missing, then the DID refers to the chainDescriptor maintained by the chain registry rather than an asset maintained by an asset module.
 
-For example, `did:cosmos:ixo` refers to the chain descriptor associated with the "ixo" chain space in the chain registry.
+For example, `did:ixo:ixo` refers to the chain descriptor associated with the "ixo" chain space in the chain registry.
 
-### did:cosmos DID-URL syntax
+### did:ixo DID-URL syntax
 
-**did:cosmos** DIDs may also be used in DID-URLs, based on [RFC5234](https://www.w3.org/TR/did-core/#bib-rfc3986)
+**did:ixo** DIDs may also be used in DID-URLs, based on [RFC5234](https://www.w3.org/TR/did-core/#bib-rfc3986)
 
 ```abnf
-cosmos-did-url      = cosmos-did [path-abempty] [ "#" fragment ]
+Interchain-did-url      = Interchain-did [path-abempty] [ "#" fragment ]
 path-abempty  = *( "/" segment )
 segment       = *pchar
 segment-nz    = 1*pchar
@@ -132,65 +130,65 @@ pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
 fragment    = *( pchar / "/" / "?" )
 ```
 
-NOTE: **did:cosmos** does not support `query` parts. The path and fragment parts are defined below.
+NOTE: **did:ixo** does not support `query` parts. The path and fragment parts are defined below.
 
-## Adding support for did:cosmos
+## Adding support for did:ixo
 
-To support `did:cosmos`, any Cosmos application chain MUST add an entry in the Cosmos Chain Registry [[3]](#ref3). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:cosmos` method. The `chain-id` contained in the `chain.json` will be used to identify the correct Cosmos blockchain network to connect to.
+To support `did:ixo`, any Interchain application chain MUST add an entry in the Interchain Chain Registry [[3]](#ref3). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:ixo` method. The `chain-id` contained in the `chain.json` will be used to identify the correct Interchain blockchain network to connect to.
 
-The Cosmos Chain Registry is the source of valid `chainspace` values and can be programmatically queried via an API [[4]](#ref4).
+The Interchain Chain Registry is the source of valid `chainspace` values and can be programmatically queried via an API [[4]](#ref4).
 
-For each Cosmos blockchain there MUST be an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) that includes a file called `chain.json`. The chain registry's chain descriptors will point to the appropriate source for its chain.json file.
+For each Interchain blockchain there MUST be an entry in the [Interchain Chain Registry](https://github.com/Interchain/chain-registry) that includes a file called `chain.json`. The chain registry's chain descriptors will point to the appropriate source for its chain.json file.
 
-The `did:cosmos` method supports offline creation of DIDs. Any valid Secp256k1 public key may be used to identify a did:cosmos asset. To support this, each asset module must allow the assignment of an assetID at creation. It SHOULD use a message format that includes a signature using the associated private key to establish the initial control over that key. If an asset module is called to create an asset with an asset-id already associated with an asset under its control, it MUST be rejected.
+The `did:ixo` method supports offline creation of DIDs. Any valid Secp256k1 public key may be used to identify a did:ixo asset. To support this, each asset module must allow the assignment of an assetID at creation. It SHOULD use a message format that includes a signature using the associated private key to establish the initial control over that key. If an asset module is called to create an asset with an asset-id already associated with an asset under its control, it MUST be rejected.
 
-During resolution, resolvers MUST first check on-chain to see if a given identifier is registered with the asset module. If that returns an "identifier not found" error, it must generate a minimalist deterministic DID document using the algorithm defined for did:key, but retaining the full did:cosmos DID as its identifier.
+During resolution, resolvers MUST first check on-chain to see if a given identifier is registered with the asset module. If that returns an "identifier not found" error, it must generate a minimalist deterministic DID document using the algorithm defined for did:key, but retaining the full did:ixo DID as its identifier.
 
 Note that to support this functionality, the chain registry--which is itself an asset module managing the chainspace descriptors--exposes two functions which refer to the same asset:
 
-* getDidDocument(`did:cosmos:hub:chainregistry:abc123`) -- returns the DID document for controlling that chain descriptor.
-* getChainDescriptor(`did:cosmos:ixo`) -- returns the chain descriptor file associated with the "ixo" chainspace.
+* getDidDocument(`did:ixo:hub:chainregistry:abc123`) -- returns the DID document for controlling that chain descriptor.
+* getChainDescriptor(`did:ixo:ixo`) -- returns the chain descriptor file associated with the "ixo" chainspace.
 
-### Examples of `did:cosmos` identifiers
+### Examples of `did:ixo` identifiers
 
-A DID written to the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace`:
+A DID written to the ixo Impact Hub Interchain Blockchain network "NFT" `namespace`:
 
 ```abnf
-did:cosmos:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg
+did:ixo:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg
 ```
 
-A DID written to the Regen Cosmos Blockchain network "NFT" `namespace`:
+A DID written to the Regen Interchain Blockchain network "NFT" `namespace`:
 
 ```abnf
-did:cosmos:1:regen:ecocredit:1Kpg3KJPOIarthPWf8HHyy
+did:ixo:1:regen:ecocredit:1Kpg3KJPOIarthPWf8HHyy
 ```
 
-A DID written to the Regen `Testnet` Cosmos Blockchain network "NFT" `namespace`:
+A DID written to the Regen `Testnet` Interchain Blockchain network "NFT" `namespace`:
 
 ```abnf
-did:cosmos:1:regentest:ecocredit:1Kpg3KJPOIarthPWf8HHyy
+did:ixo:1:regentest:ecocredit:1Kpg3KJPOIarthPWf8HHyy
 ```
 
-A DID URL on the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace` for retrieving a specific IID Linked Resource using a `path`:
+A DID URL on the ixo Impact Hub Interchain Blockchain network "NFT" `namespace` for retrieving a specific IID Linked Resource using a `path`:
 
 ```abnf
-did:cosmos:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg/myresource
+did:ixo:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg/myresource
 ```
 
-A DID written to the ixo Cosmos Blockchain network "NFT" `namespace` referencing a specific IID Linked Resource `fragment`:
+A DID written to the ixo Interchain Blockchain network "NFT" `namespace` referencing a specific IID Linked Resource `fragment`:
 
 ```abnf
-did:cosmos:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
+did:ixo:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
 ```
 
 ## DID documents
 
-A DID document associated with a **did:cosmos** DID is a set of data describing an on-chain asset. The representation of a **did:cosmos** DID document MUST meet the DID Core specifications [[5]](#ref5).
+A DID document associated with a **did:ixo** DID is a set of data describing an on-chain asset. The representation of a **did:ixo** DID document MUST meet the DID Core specifications [[5]](#ref5).
 
 ### Properties defined for all W3C specification compliant DID documents
 
 1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String `https://www.w3.org/ns/did/v1`, or a JSON Array where the first item is the JSON String `https://www.w3.org/ns/did/v1` and the subsequent items are serialized according to the JSON representation production rules. (This also requires the IID context, described in the following section.)
-2. **`id`**: A **did:cosmos** DID as defined in this document.
+2. **`id`**: A **did:ixo** DID as defined in this document.
 3. **`controller`** (optional): A list of fully qualified DID strings or one string. Contains one or more DIDs whose verification relationships MUST be considered valid for this DID.
 4. **`verificationMethod`** (optional): A list of Verification Methods
 5. **`authentication`** (optional): A list of strings with key aliases or IDs
@@ -205,7 +203,7 @@ A DID document associated with a **did:cosmos** DID is a set of data describing 
 
 Verification methods are used to define how to authenticate / authorise interactions with a DID subject or delegates. Verification method is an OPTIONAL property.
 
-1. **`id`** (string): A string with format `did:cosmos:impacthub:<chainspace>:<namespace>#<key-alias>`
+1. **`id`** (string): A string with format `did:ixo:impacthub:<chainspace>:<namespace>#<key-alias>`
 2. **`controller`**: A string with fully qualified DID. DID must exist.
 3. **`type`** (string)
 4. **`publicKeyJwk`** (`map[string,string]`, optional): A map representing a JSON Web Key that conforms to RFC7517 [[7]](#ref7). See definition of `publicKeyJwk` for additional constraints.
@@ -218,9 +216,9 @@ encoded public key.
 
 ```jsonc
 {
-  "id": "did:cosmos:1:impacthub:nft:abc123#key-0",
+  "id": "did:ixo:1:impacthub:nft:abc123#key-0",
   "type": "JsonWebKey2020",
-  "controller": "did:cosmos:1:impacthub:nft:abc123",
+  "controller": "did:ixo:1:impacthub:nft:abc123",
   "publicKeyJwk": {
     "kty": "OKP",
     // external (property name)
@@ -243,11 +241,11 @@ RFC3986 for URIs and/or maps.
 
 ### Additional Properties
 
-In addition to the properties defined in DID Core, the following properties are defined for **did:cosmos**.
+In addition to the properties defined in DID Core, the following properties are defined for **did:ixo**.
 
 #### Context
 
-As an IID, **did:cosmos** DID documents MUST include `https://w3id.org/earth/NS/iid/v1` as a context value, following the default DID context:
+As an IID, **did:ixo** DID documents MUST include `https://w3id.org/earth/NS/iid/v1` as a context value, following the default DID context:
 
 ```json
 "@context" : [
@@ -351,7 +349,7 @@ Consider the following example minimum DID document from DID Core:
 
 #### EXAMPLE 1: A minimal DID document (JSON-LD)
 
-(not a did:cosmos did document, shown for comparison)
+(not a did:ixo did document, shown for comparison)
 
 ```json
 {
@@ -390,15 +388,15 @@ An equivalent example of minimal IID document would be:
    "https://w3id.org/earth/NS/iid/v1"
 ],
 
-"id": "did::cosmos:1:impacthub:nft:abc123",
+"id": "did::Interchain:1:impacthub:nft:abc123",
 
 "authentication": [{
 
-  "id": "did:cosmos:1:impacthub:nft:abc123i#keys-1",
+  "id": "did:ixo:1:impacthub:nft:abc123i#keys-1",
 
   "type": "Ed25519VerificationKey2020",
 
-  "controller": "did:cosmos:1:impacthub:nft:abc123",
+  "controller": "did:ixo:1:impacthub:nft:abc123",
 
   "publicKeyMultibase": "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
 
@@ -419,15 +417,15 @@ Finally, an example using LinkedResources for privacy-respecting linking of exte
    "https://w3id.org/earth/NS/iid/v1"
   ],
 
-  "id": "did:cosmos:1:impacthub:nft:abc123",
+  "id": "did:ixo:1:impacthub:nft:abc123",
 
   "authentication": [{
 
-    "id": "did::cosmos:1:impacthub:nft:abc123i#keys-1",
+    "id": "did::Interchain:1:impacthub:nft:abc123i#keys-1",
 
     "type": "Ed25519VerificationKey2020",
 
-    "controller": "did:cosmos:1:impacthub:nft:abc123",
+    "controller": "did:ixo:1:impacthub:nft:abc123",
 
     "publicKeyMultibase": "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
 
@@ -435,7 +433,7 @@ Finally, an example using LinkedResources for privacy-respecting linking of exte
 
   "service": [{
 
-    "id":"did:cosmos:1:impacthub:nft:abc123#mediator",
+    "id":"did:ixo:1:impacthub:nft:abc123#mediator",
 
     "type": "polymorphicMediator2021",
 
@@ -445,15 +443,15 @@ Finally, an example using LinkedResources for privacy-respecting linking of exte
 
 "linkedResource" : [{
 
-    "id": "did:cosmos:1:impacthub:abc123#resourceHashgraph",
+    "id": "did:ixo:1:impacthub:abc123#resourceHashgraph",
 
-    "path": "did:cosmos:1:impacthub:nft:abc123/resourceHashgraph",
+    "path": "did:ixo:1:impacthub:nft:abc123/resourceHashgraph",
 
     "type": "hashgraph",
   
     "proof": "afybeiemxf5abjwjbikoz4mcb3a3dla6ual3jsgpdr4cjr3oz",
 
-    "endpoint" : "did:cosmos:1:impacthub:nft:abc123?service=mediator"
+    "endpoint" : "did:ixo:1:impacthub:nft:abc123?service=mediator"
 
   }]
 
@@ -469,32 +467,32 @@ Finally, an example using LinkedResources for privacy-respecting linking of exte
     "https://www.w3.org/ns/did/v1",
     "https://www.w3id.org/earth/NS/iid/v1"
   ],
-  "id": "did:cosmos:1:impacthub:nft:abc123",
+  "id": "did:ixo:1:impacthub:nft:abc123",
 
   "verificationMethod": [{
-    "id": "did:cosmos:1:impacthub:nft:abc123#keys-1",
+    "id": "did:ixo:1:impacthub:nft:abc123#keys-1",
     "type": "Ed25519VerificationKey2020",
-    "controller": "did:cosmos:1:impacthub:nft:abc123",
+    "controller": "did:ixo:1:impacthub:nft:abc123",
     "publicKeyMultibase": "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
   }],
 
-  "authentication": "did:cosmos:1:impacthub:nft:abc123#keys-1",
-  "capabilityDelegation" : "did:cosmos:1:impacthub:nft:abc123#keys-1",
-  "capabilityInvocation" : "did:cosmos:1:impacthub:nft:abc123#keys-1",
+  "authentication": "did:ixo:1:impacthub:nft:abc123#keys-1",
+  "capabilityDelegation" : "did:ixo:1:impacthub:nft:abc123#keys-1",
+  "capabilityInvocation" : "did:ixo:1:impacthub:nft:abc123#keys-1",
 
   "service": [{
-    "id":"did:cosmos:1:impacthub:nft:abc123#mediator",
+    "id":"did:ixo:1:impacthub:nft:abc123#mediator",
     "type": "polymorphicMediator2021",
-    "serviceEndpoint": "http://8zd335ae47dp89pd.onion/iid/mediator/did:cosmos:1:impacthub:nft:abc123"
+    "serviceEndpoint": "http://8zd335ae47dp89pd.onion/iid/mediator/did:ixo:1:impacthub:nft:abc123"
   }],
 
 "linkedResource" : [{
-    "id": "did:cosmos:1:impacthub:nft:abc123#resourceHashgraph",
-    "path": "did:cosmos:1:impacthub:nft:abc123/resourceHashgraph",
+    "id": "did:ixo:1:impacthub:nft:abc123#resourceHashgraph",
+    "path": "did:ixo:1:impacthub:nft:abc123/resourceHashgraph",
     "type": "hashgraph",
     "rel":"attachments",
     "proof": "afybeiemxf5abjwjbikoz4mcb3a3dla6ual3jsgpdr4cjr3oz",
-    "endpoint" : "did:cosmos:1:impacthub:nft:abc123?service=mediator"
+    "endpoint" : "did:ixo:1:impacthub:nft:abc123?service=mediator"
   }]
 
 }
@@ -502,7 +500,7 @@ Finally, an example using LinkedResources for privacy-respecting linking of exte
 
 ### JSON-LD
 
-All did:cosmos serializations MUST use json-ld.
+All did:ixo serializations MUST use json-ld.
 <https://w3c.github.io/did-core/#json-ld>
 
 The DID document, DID document data structures, and representation-specific entries map MUST be serialized to the JSON-LD representation according to the JSON representation production rules as defined in § 6.2 JSON.
@@ -513,7 +511,7 @@ In addition to using the JSON representation production rules, JSON-LD productio
 
 ```jsonc
 {
-  "id":"did:cosmos:1:impacthub:nft:abc123#linked-domain",
+  "id":"did:ixo:1:impacthub:nft:abc123#linked-domain",
   "type": "LinkedDomains",
   "serviceEndpoint": "https://bar.example.com"
 }
@@ -521,7 +519,7 @@ In addition to using the JSON representation production rules, JSON-LD productio
 
 ## DID operations
 
-**did:cosmos** DID and DID  documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See the draft method specification [[11]](#ref11) for details on how create, read, update and delete (CRUD) operations are handled.
+**did:ixo** DID and DID  documents are managed by a Interchain-SDK module that uses the gRPC communication protocol. See the draft method specification [[11]](#ref11) for details on how create, read, update and delete (CRUD) operations are handled.
 
 ### Create DID (Register)
 
@@ -533,22 +531,22 @@ Application Chain->Asset Module: Asset registered with unique-asset-id and tx ID
 Asset Module->>DID Registry: MsgCreateIdentifier(unique-assset-id string, internal-namespace-identifier string)
 DID Registry->>Application Chain: Lookup namespace from internal-namespace-identifier
 Application Chain->>DID Registry: Return namespace
-DID Registry->>DID Registry: Generate did:cosmos method compliant DID
-DID Registry->>Asset Module: Return fully-qualified did:cosmos method compliant DID. (did:cosmos:ixo:nft:1234567)
+DID Registry->>DID Registry: Generate did:ixo method compliant DID
+DID Registry->>Asset Module: Return fully-qualified did:ixo method compliant DID. (did:ixo:ixo:nft:1234567)
 Asset Module->>Asset Module: Store DID? Assume it will need to be stored as part of the asset state to recreate DID document?
 Asset Module->>DID Creator: Return DID to User for storage?
 
 Note over DID Creator, Asset Module: Or will the DID be regenerated together with the DID as and when required?
 ```
 
-The objective of the IID method is to allow any application developer to include the `did:cosmos` method in Cosmos modules. Most modules (e.g. NFT, bank, tx) already keep state and events related to assets created and managed by the module. IIDs can be created by any module as an additional capability to enrich assets and related information that exist on-chain and off-chain.
+The objective of the IID method is to allow any application developer to include the `did:ixo` method in Interchain modules. Most modules (e.g. NFT, bank, tx) already keep state and events related to assets created and managed by the module. IIDs can be created by any module as an additional capability to enrich assets and related information that exist on-chain and off-chain.
 
-Any developer is free to implement the 'did:cosmos' method as a DID and on-chain asset enrichment capability inside any Cosmos module.
-DID records created by various Cosmos module developers will be stored in an internal DID registry of the module as part of the module state. DID records can change state from trigger events by the linked asset.
+Any developer is free to implement the 'did:ixo' method as a DID and on-chain asset enrichment capability inside any Interchain module.
+DID records created by various Interchain module developers will be stored in an internal DID registry of the module as part of the module state. DID records can change state from trigger events by the linked asset.
 
-Below is an example of create operation with the IID interface used by did:cosmos.
+Below is an example of create operation with the IID interface used by did:ixo.
 
-This operation creates a new DID using the did:cosmos method along with associated DID document representation.
+This operation creates a new DID using the did:ixo method along with associated DID document representation.
 
 To create and publish a local `chainspace` DID document use the message:
 
@@ -562,11 +560,11 @@ To create and publish a remote `chainspace` DID document use the message:
 MsgCreateIdentifier(unique-id string, namespace string, chainspace string)
 ```
 
-If the input DID is not a valid DID for the **did:cosmos** method, or if the DID already exists on-chain, the message returns an error.
+If the input DID is not a valid DID for the **did:ixo** method, or if the DID already exists on-chain, the message returns an error.
 
-* **`unique-id`**: `MsgCreateIdentifier` unique asset ID inside a Cosmos module.
+* **`unique-id`**: `MsgCreateIdentifier` unique asset ID inside a Interchain module.
 * **`namespace`**: the relevant module that control the associated DID on-chain asset.
-* **`chainspace`**: the relevant Cosmos blockchain that the DID should be registered on.
+* **`chainspace`**: the relevant Interchain blockchain that the DID should be registered on.
 * **`controller, verificationMethod, authentication, assertionMethod, capabilityInvocation, capabilityDelegation, keyAgreement, service, alsoKnownAs, context`**: Optional parameters in accordance with DID Core specification properties.
 
 #### Client request format for create DID
@@ -588,23 +586,23 @@ WriteRequest{
 
 ### Read DID (Resolve and Verify)
 
-Example flow for `did:cosmos:ixo:nft:12345`, an asset hosted by the NFT module on the ixo application chain.
+Example flow for `did:ixo:ixo:nft:12345`, an asset hosted by the NFT module on the ixo application chain.
 
 ```mermaid
 sequenceDiagram
 autonumber
-User->>Cosmos DID Registry: Resolve `did:cosmos:ixo:nft:12345`
-Cosmos DID Registry->>Chain Registry: Lookup correct 'chainspace' value for `did:cosmos:ixo:nft:12345`
-Chain Registry->>Cosmos DID Registry: Return route to ixo DID Registry 
-Cosmos DID Registry->>User: Route to ixo DID Registry
-User->>Ixo DID Registry:  Resolve DID for `did:cosmos:ixo:nft:12345`
+User->>Interchain DID Registry: Resolve `did:ixo:ixo:nft:12345`
+Interchain DID Registry->>Chain Registry: Lookup correct 'chainspace' value for `did:ixo:ixo:nft:12345`
+Chain Registry->>Interchain DID Registry: Return route to ixo DID Registry 
+Interchain DID Registry->>User: Route to ixo DID Registry
+User->>Ixo DID Registry:  Resolve DID for `did:ixo:ixo:nft:12345`
 Ixo DID Registry->>User : Return route to ixo NFT module
-User->>ixo NFT Module: Resolve DID for `did:cosmos:ixo:nft:12345`
+User->>ixo NFT Module: Resolve DID for `did:ixo:ixo:nft:12345`
 ixo NFT Module->>ixo NFT Module: Construct DID document based on current chain state
-ixo NFT Module->>User: Return DID document for DID `did:cosmos:ixo:nft:12345`
+ixo NFT Module->>User: Return DID document for DID `did:ixo:ixo:nft:12345`
 ```
 
-To resolve did:cosmos method DID documents, the `QueryIdentifierDocument` operation fetches a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID.
+To resolve did:ixo method DID documents, the `QueryIdentifierDocument` operation fetches a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Interchain blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID.
 
 A DID can be resolved using the gRPC message:
 
@@ -614,12 +612,12 @@ QueryIdentifierDocument(id string)
 
 The operation CAN be executed by anyone and is publicly available.
 
-* **`id`**: `QueryIdentifierDocument` should be a fully qualified DID of type `did:cosmos:<chainspace>:<namespace>`. It MUST be the DID that is to be resolved. Allowed `chainspace` and `namespace` values are available in the Cosmos Chain Registry [[3]](#ref3)
+* **`id`**: `QueryIdentifierDocument` should be a fully qualified DID of type `did:ixo:<chainspace>:<namespace>`. It MUST be the DID that is to be resolved. Allowed `chainspace` and `namespace` values are available in the Interchain Chain Registry [[3]](#ref3)
 * **`metadata`**: Contains DID document metadata? `created`, `updated`, `valid`, `versionId`
 
-The IID resolver is a public facing interface and will be exposed by installing the IID module in the Cosmos blockchain. The IID resolver will resolve down to the `namespace` to query for the DID document. This assume that Cosmos module developers using the `did:cosmos` method will need to implement a DID resolver internal to the module to fetch stored DID documents.
+The IID resolver is a public facing interface and will be exposed by installing the IID module in the Interchain blockchain. The IID resolver will resolve down to the `namespace` to query for the DID document. This assume that Interchain module developers using the `did:ixo` method will need to implement a DID resolver internal to the module to fetch stored DID documents.
 
-The operation MUST return the DID document and metadata if it exist in the Cosmos blockchain module.
+The operation MUST return the DID document and metadata if it exist in the Interchain blockchain module.
 
 #### Client request format to resolve a DID to its DID document
 
@@ -632,7 +630,7 @@ WriteRequest QueryIdentifierDocument(id string)
 ```jsonc
 WriteRequest{
         "data": QueryIdentifierDocument {
-                "id": "did:cosmos:impacthub:nft:1234567"
+                "id": "did:ixo:impacthub:nft:1234567"
         }
 }
 ```
@@ -651,8 +649,8 @@ MsgUpdateIidDocument(id string, controller string, identifiers list, verificatio
 
 The operation MUST be executed by an authorized controller of the DID.
 
-* **`id`**: `MsgUpdateIidDocument` should be a fully qualified DID of type `did:cosmos:<chainspace>:<namespace>`. It MUST be the DID that is to be deleted. Allowed `chainspace` and `namespace` values are available in the Cosmos Chain Registry][[3]](#ref3))
-* **`controller`**: should be a fully qualified DID of type `did:cosmos:<chainspace>:<namespace>`.
+* **`id`**: `MsgUpdateIidDocument` should be a fully qualified DID of type `did:ixo:<chainspace>:<namespace>`. It MUST be the DID that is to be deleted. Allowed `chainspace` and `namespace` values are available in the Interchain Chain Registry][[3]](#ref3))
+* **`controller`**: should be a fully qualified DID of type `did:ixo:<chainspace>:<namespace>`.
 * **`identifiers, verificationMethods, verificationRelationships, service, linkedResources, accordedRights`**: Optional parameters in accordance with DID Core and IID specification properties.
 
 The operation MUST update the DID document and metadata. The operation is not reversible.
@@ -669,8 +667,8 @@ WriteRequest MsgUpdateIidDocument(id string, controller string, identifiers list
 ```jsonc
 WriteRequest{
         "data": MsgUpdateIidDocument {
-                "id": "did:cosmos:impacthub:1234567",
-        "controller": "did:cosmos:impacthub:1234567"
+                "id": "did:ixo:impacthub:1234567",
+        "controller": "did:ixo:impacthub:1234567"
         "identifiers": [],
         "verificationMethods": [],
         "verificationRelationships": [],
@@ -690,7 +688,7 @@ participant User
 participant Web Browser
 participant NFT DAPP
 participant Wallet
-participant Cosmos DID Registry (running on Cosmos Hub)
+participant Interchain DID Registry (running on Interchain Hub)
 participant Chain Registry API
 participant ixo DID Registry
 participant ixo NFT Module
@@ -701,8 +699,8 @@ NFT DAPP-->>Web Browser: Show NFTs
 Web Browser-->>User: Display NFTs
 User->>Web Browser: Buy NFT
 Web Browser->>NFT DAPP: Buy NFT
-NFT DAPP->>Cosmos DID Registry (running on Cosmos Hub): Resolve NFT IID
-Cosmos DID Registry (running on Cosmos Hub)-->>NFT DAPP: Linked Resource Reference
+NFT DAPP->>Interchain DID Registry (running on Interchain Hub): Resolve NFT IID
+Interchain DID Registry (running on Interchain Hub)-->>NFT DAPP: Linked Resource Reference
 NFT DAPP->>Chain Registry API: Get chain definition
 Chain Registry API-->>NFT DAPP: Return chain.json
 NFT DAPP->>ixo DID Registry: Resolve NFT IID
@@ -726,7 +724,7 @@ Web Browser-->>User: Display NFT transfer success
 
 ### Revoke DID
 
-This operation deactivates DID records using the did:cosmos method.
+This operation deactivates DID records using the did:ixo method.
 
 ### Deactivate DID
 
@@ -747,8 +745,8 @@ The operation MUST be executed by an authorized controller of the DID.
 MsgDeactivateIdentifier(id string, Controller string)
 ```
 
-* **`id`**: `MsgDeactivateIdentifier` should be a fully qualified DID of type `did:cosmos:<chainspace>:<namespace>`. It MUST be the DID that is to be deactivated. Allowed `chainspace` and `namespace` values are available in the Cosmos Chain Registry [[3]](#ref3)
-* **`controller`**: should be a fully qualified DID of type `did:cosmos:<chainspace>:<namespace>`.
+* **`id`**: `MsgDeactivateIdentifier` should be a fully qualified DID of type `did:ixo:<chainspace>:<namespace>`. It MUST be the DID that is to be deactivated. Allowed `chainspace` and `namespace` values are available in the Interchain Chain Registry [[3]](#ref3)
+* **`controller`**: should be a fully qualified DID of type `did:ixo:<chainspace>:<namespace>`.
 
 The operation MUST update the DID document metadata and set the Active value to False. The operation is not reversible.
 
@@ -770,17 +768,17 @@ MsgDeactivateIdentifier(id string, Controller string)
 ```jsonc
 WriteRequest{
         "data": MsgDeactivateIdentifier {
-                "id": "did:cosmos:impacthub:1234567",
-        "controller": "did:cosmos:impacthub:1234567"
+                "id": "did:ixo:impacthub:1234567",
+        "controller": "did:ixo:impacthub:1234567"
         }
 }
 ```
 
 ## Security Considerations
 
-**did:cosmos** is designed for Cosmos compatible blockchains, which secure chain state using a proof-of-stake algorithm. Actively maintained and supporting hundreds of independent blockchains, Cosmos has a well-developed security process defined at [https://github.com/cosmos/cosmos-sdk/blob/master/SECURITY.md](https://github.com/cosmos/cosmos-sdk/blob/master/SECURITY.md).
+**did:ixo** is designed for Interchain compatible blockchains, which secure chain state using a proof-of-stake algorithm. Actively maintained and supporting hundreds of independent blockchains, Interchain has a well-developed security process defined at [https://github.com/Interchain/Interchain-sdk/blob/master/SECURITY.md](https://github.com/Interchain/Interchain-sdk/blob/master/SECURITY.md).
 
-All **did:cosmos** DIDs use Secp256k1 keys for initial asset creation and updates. This is the same cryptographic curve used by Bitcoin and Ethereum; it is largely considered secure.
+All **did:ixo** DIDs use Secp256k1 keys for initial asset creation and updates. This is the same cryptographic curve used by Bitcoin and Ethereum; it is largely considered secure.
 
 The asset module on application chains is responsible for securing CRUD operations on the assets in manages. A thorough security review is recommended for any asset module.
 
@@ -788,15 +786,15 @@ The asset module on application chains is responsible for securing CRUD operatio
 
 ### IIDs are designed to represent on-chain Assets, not people
 
-IIDs, e.g., did:cosmos:ixo:nft:1:abc are designed to represent on-chain assets, as such the identifier itself is never used to refer to real-world objects like people, with associated privacy requirements.
+IIDs, e.g., did:ixo:ixo:nft:1:abc are designed to represent on-chain assets, as such the identifier itself is never used to refer to real-world objects like people, with associated privacy requirements.
 
 ### IID references may refer to people or orgainsations
 
-IID references, e.g., did:cosmos:ixo:nft:1:abc#creator may in fact be used to refer to real people and organizations. As such, care must be taken to ensure that any associated personal data be managed off chain with appropriate privacy mechanisms such as the ability to remove the data from public disclosure.
+IID references, e.g., did:ixo:ixo:nft:1:abc#creator may in fact be used to refer to real people and organizations. As such, care must be taken to ensure that any associated personal data be managed off chain with appropriate privacy mechanisms such as the ability to remove the data from public disclosure.
 
 ### Linked Resources are designed to be privacy-agile
 
-IID references specified as Linked Resources offer several privacy-agile ways to associate the on-chain asset with arbitrary resources, providing a way for did:cosmos:ixo:nft:1:abc#creator to refer to an off-chain data store with the sensitive data. For example, an NFT's creator could be specified by a link and a hash to a Verifiable Credential (or a simple JSON file) that states the creator's name. Storing that name on-chain would create a regulatory problem. Linked Resources allow the information to be shared while ensuring the ability to honor requests for deletion.
+IID references specified as Linked Resources offer several privacy-agile ways to associate the on-chain asset with arbitrary resources, providing a way for did:ixo:ixo:nft:1:abc#creator to refer to an off-chain data store with the sensitive data. For example, an NFT's creator could be specified by a link and a hash to a Verifiable Credential (or a simple JSON file) that states the creator's name. Storing that name on-chain would create a regulatory problem. Linked Resources allow the information to be shared while ensuring the ability to honor requests for deletion.
 
 #### Example of a linked resource that references its creator
 
@@ -812,7 +810,7 @@ IID references specified as Linked Resources offer several privacy-agile ways to
      "value" : "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}],
    "resourceFormat" : "application/did+ld+json",
    "compression" : "none",
-   "endpoint": "https://earthprogram.directory?listing=did:cosmos:ixo:nft:1:abc123#owner"
+   "endpoint": "https://earthprogram.directory?listing=did:ixo:ixo:nft:1:abc123#owner"
 }
 ```
 
@@ -842,14 +840,14 @@ Online at
 [[https://www.w3.org/TR/did-core/]](https://www.w3.org/TR/did-core/).
 Accessed February 15, 2021.
 
-<a name="ref3">[3]</a> Cosmos Chain Registry.
+<a name="ref3">[3]</a> Interchain Chain Registry.
 Online at
-[[https://github.com/cosmos/chain-registry]](https://github.com/cosmos/chain-registry).
+[[https://github.com/Interchain/chain-registry]](https://github.com/Interchain/chain-registry).
 Accessed February 05, 2022.
 
-<a name="ref4">[4]</a> Cosmos Chain Registry API.
+<a name="ref4">[4]</a> Interchain Chain Registry API.
 Online at
-[[https://registry.cosmos.directory/]](https://registry.cosmos.directory/).
+[[https://registry.Interchain.directory/]](https://registry.Interchain.directory/).
 Accessed February 05, 2022.
 
 <a name="ref5">[5]</a> DID Core DID document Representation Specification.
@@ -876,7 +874,7 @@ Online at
 Online at
 [[https://www.w3.org/TR/did-spec-registries/]](https://www.w3.org/TR/did-spec-registries/).
 
-<a name="ref11">[11]</a> Cosmos IID Module Specification.
+<a name="ref11">[11]</a> Interchain IID Module Specification.
 Online at
 [[https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ]](https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ).
 
